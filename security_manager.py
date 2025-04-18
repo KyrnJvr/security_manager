@@ -55,4 +55,26 @@ while True:
     print("3. Update a task")
     print("4. Delete a task")
     print("5. Exit")
+
+    # Ask user for service to use
+    choice = int(input("Enter choice: "))
+    print() # for readability
+
+    # if user selected to add a new task
+    if choice == 1:
+        task_details = input("Enter task details: ").title()
+        due_date = input("Enter due date: ")
+        priority = input("Enter priority level: ").title()
+        category = input("Enter category: ").title()
+        status = input("Enter status: ").title()
+
+        new_task = SecurityTask(task_details, due_date, priority, category, status)
+        task_list.append(new_task)
+        print("Task added successfully!")
+
+    elif choice == 5:
+        print("Exiting the program..")
+        break
+
+
         
