@@ -50,6 +50,7 @@ task_list = []
 
 # Start of program
 while True:
+    # print main menu options
     print("1. Add a new task")
     print("2. View all tasks")
     print("3. Update a task")
@@ -62,15 +63,35 @@ while True:
 
     # if user selected to add a new task
     if choice == 1:
+        # ask for task description
         task_details = input("Enter task details: ").title()
         due_date = input("Enter due date: ")
         priority = input("Enter priority level: ").title()
         category = input("Enter category: ").title()
         status = input("Enter status: ").title()
 
+        # create a new instance of Security Task with user inputs
         new_task = SecurityTask(task_details, due_date, priority, category, status)
+        # add new task to the list
         task_list.append(new_task)
+        # print success message
         print("Task added successfully!")
+    
+    # if user selects to view all tasks
+    elif choice == 2:
+        # check if task list is not empty
+        if task_list:
+            print(f"{'':<5} {'Task':<30} {'Due Date':<12} {'Priority':<10} {'Category':<10} {'Status':<12}")
+            print("-"*90)
+
+            # iterate through the whole list and print each task
+            for index, task in enumerate(task_list, start=1):
+                print(f"{index:<5} {task.task_details.strip():<30} {task.due_date.strip():<12} {task.priority.strip():<10} {task.category.strip():<10} {task.status.strip():<12}")
+            print()
+        # if task list is empty
+        else:
+            print("No task available, please add a new one and try again.")
+        
 
     elif choice == 5:
         print("Exiting the program..")
