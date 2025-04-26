@@ -91,7 +91,82 @@ while True:
         # if task list is empty
         else:
             print("No task available, please add a new one and try again.")
-        
+    
+    # if user selects to update a task
+    elif choice == 3:
+        # view the list of task for the user to pick which one to update
+        if task_list:
+            print(f"{'':<5} {'Task':<30} {'Due Date':<12} {'Priority':<10} {'Category':<10} {'Status':<12}")
+            print("-"*90)
+
+            # iterate through the whole list and print each task
+            for index, task in enumerate(task_list, start=1):
+                print(f"{index:<5} {task.task_details.strip():<30} {task.due_date.strip():<12} {task.priority.strip():<10} {task.category.strip():<10} {task.status.strip():<12}")
+            print()
+
+            # ask user which task to update
+            task_number = int(input("Enter task number to update: "))
+            print() # for readability
+
+            # print task options to choose from
+            print("a. task details")
+            print("b. due date")
+            print("c. priority")
+            print("d. category")
+            print("e. status")
+
+            # ask user which task attribute to update
+            what_to_update = input("What do you want to update?: ").lower()
+
+            '''
+            
+            codition template
+
+            if user selects to update {task attribute} THEN
+                ask for new value
+                update task accordingly
+                print success message
+            else:
+                print invalid choice
+
+            
+            '''
+
+            # if user selects to update task details
+            if what_to_update == 'a':
+                new_value = input("Enter new task details: ")
+                task_list[task_number - 1].task_details = new_value
+                print("Successfully updated task details!")
+
+            # if user selects to update due date
+            elif what_to_update == 'b':
+                new_value = input("Enter new due date: ")
+                task_list[task_number - 1].due_date = new_value
+                print("Successfully updated due date!")
+
+            # if user selects to update priority
+            elif what_to_update == 'c':
+                new_value = input("Enter new priority: ")
+                task_list[task_number - 1].priority = new_value
+                print("Successfully updated priority!")
+
+            # if user selects to update category
+            elif what_to_update == 'd':
+                new_value = input("Enter new category: ")
+                task_list[task_number - 1].category = new_value
+                print("Successfully updated category!")
+
+            # if user selects to update status
+            elif what_to_update == 'e':
+                new_value = input("Enter new status: ")
+                task_list[task_number - 1].status = new_value
+                print("Successfully updated status!")
+            else:
+                print("Invalid choice, please try again.")            
+
+        # if task list is empty
+        else:
+            print("No task available to update, please add a new one and try again.")
 
     elif choice == 5:
         print("Exiting the program..")
