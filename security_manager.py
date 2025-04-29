@@ -2,6 +2,7 @@
 # Date: 16/04/2025
 
 import csv
+import os
 
 '''
 BYOD Security Manager App
@@ -71,10 +72,18 @@ def readFromFile(file):
 
 def writeToFile(file, tasks):
     '''Writes to a file'''
-    data_file = open(file, "w")
-    for task in tasks:
-        data_file.write(f"{task.task_details},{task.due_date},{task.priority},{task.category},{task.status}")
-    data_file.close()
+    with open(file, "w", newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["Task Details", "Due Date", "Priority", "Category", "Status"])
+        
+        for task in tasks:
+            writer.writerow([
+                task.task_details,
+                task.due_date,
+                task.priority,
+                task.category,
+                task.status
+            ])
 
 
 def viewTasks(list_of_tasks):
@@ -86,14 +95,28 @@ def viewTasks(list_of_tasks):
     for index, task in enumerate(list_of_tasks, start=1):
         print(f"{index:<5} {task.task_details:<30} {task.due_date:<12} {task.priority:<10} {task.category:<10} {task.status:<12}")
 
-        
-# Initialise empty task list to be populated when user adds new task/s
-tasks = readFromFile("tasksFile.csv")
 
+# -- Main Program --
 
-# Start of program
+user = input("Enter your student/staff details (ID or Name): ".strip())
+
+folder = "users"
+os.makedirs(folder, exist_ok=True) # make a users folder if it doesn't exist
+filename = os.path.join(folder, f"{user}.csv") # example fileanmae would be users/{user}.csv}
+
+if not os.path.exists(filename): # if there is no existing file for the user
+    print(f"No file found for: {user}. Creating a new one..")
+    with open(filename, "w", newline='') as f: # create a new one
+        writer = csv.writer(f)
+        writer.writerow(["Task Details", "Due_Date", "Priority", "Category", "Status"]) # writing a header for the user file
+    tasks = [] # empty list for the user to store tasks into
+else: # if user exists
+    print(f"Current User: {user}") # print current user
+    tasks = readFromFile(filename) # call readFromFile function to get a list of tasks from users last session
+
+# Loop
 while True:
-    # print main menu options
+    print("\nMenu Options:")
     print("1. Add a new task")
     print("2. View all tasks")
     print("3. Update a task")
@@ -101,29 +124,35 @@ while True:
     print("5. Exit")
 
     # Ask user for service to use
-    choice = int(input("Enter choice: "))
-    print() # for readability
+    try:
+        choice = int(input("Enter choice: "))
+    except ValueError:
+        print("Invalid choice, Please enter a number (1-5).")
+        continue
 
     # if user selected to add a new task
     if choice == 1:
-
+        # acquire task details from the user
         task_details = input("Enter task details: ").title()
         due_date = input("Enter due date: ")
         priority = input("Enter priority level: ").title()
         category = input("Enter category: ").title()
         status = input("Enter status: ").title()
 
+        # create a new task object and store user input
         new_task = SecurityTask(task_details, due_date, priority, category, status)
-        # add new task to the list
-        tasks.append(new_task)
+        tasks.append(new_task) # append new_task to the list
+        writeToFile(filename, tasks) # write the task to the file
+
         # print success message
         print("Task added successfully!")
-
-        writeToFile("tasksFile.csv", tasks)
     
     # if user selects to view all tasks
     elif choice == 2:
-        viewTasks(tasks)
+        if tasks:
+            viewTasks(tasks)
+        else:
+            print("\nYou don't have any tasks available. Please add some and try again.")
         print()
 
     # if user selects to update a task
@@ -199,6 +228,5 @@ while True:
     elif choice == 5:
         print("Exiting the program..")
         break
-
-
-        
+    else:
+        print("Please enter a valid option (1-5).")
