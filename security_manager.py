@@ -1,6 +1,8 @@
 # Name: Kyle Javier
 # Date: 16/04/2025
 
+import csv
+
 '''
 BYOD Security Manager App
 
@@ -44,9 +46,50 @@ class SecurityTask:
         self.category = category
         self.status = status
     
+    def to_string(self):
+        return f"{self.task_details},{self.due_date},{self.priority},{self.category},{self.status}"
 
+
+def readFromFile(file):
+    '''Read from a file of tasks'''
+    tasks = [] # empty list to put tasks to from the file
+    with open(file, "r", newline='') as data_file:
+        data_csv = csv.DictReader(data_file) 
+        for line in data_csv:
+            # create a Security Task Object for each line in the file
+            task = SecurityTask(
+                line["Task Details"],
+                line["Due Date"],
+                line["Priority"],
+                line["Category"],
+                line["Status"]
+            )
+            tasks.append(task) # Add each task to a list
+        data_file.close() # clsoe the file
+    return tasks
+
+
+def writeToFile(file, tasks):
+    '''Writes to a file'''
+    data_file = open(file, "w")
+    for task in tasks:
+        data_file.write(f"{task.task_details},{task.due_date},{task.priority},{task.category},{task.status}")
+    data_file.close()
+
+
+def viewTasks(list_of_tasks):
+    '''View tasks in a table like format'''
+    print(f"{'':<5} {'Task':<30} {'Due Date':<12} {'Priority':<10} {'Category':<10} {'Status':<12}")
+    print("-"*90)
+
+    # iterate through the whole list and print each task
+    for index, task in enumerate(list_of_tasks, start=1):
+        print(f"{index:<5} {task.task_details:<30} {task.due_date:<12} {task.priority:<10} {task.category:<10} {task.status:<12}")
+
+        
 # Initialise empty task list to be populated when user adds new task/s
-task_list = []
+tasks = readFromFile("tasksFile.csv")
+
 
 # Start of program
 while True:
@@ -63,46 +106,31 @@ while True:
 
     # if user selected to add a new task
     if choice == 1:
-        # ask for task description
+
         task_details = input("Enter task details: ").title()
         due_date = input("Enter due date: ")
         priority = input("Enter priority level: ").title()
         category = input("Enter category: ").title()
         status = input("Enter status: ").title()
 
-        # create a new instance of Security Task with user inputs
         new_task = SecurityTask(task_details, due_date, priority, category, status)
         # add new task to the list
-        task_list.append(new_task)
+        tasks.append(new_task)
         # print success message
         print("Task added successfully!")
+
+        writeToFile("tasksFile.csv", tasks)
     
     # if user selects to view all tasks
     elif choice == 2:
-        # check if task list is not empty
-        if task_list:
-            print(f"{'':<5} {'Task':<30} {'Due Date':<12} {'Priority':<10} {'Category':<10} {'Status':<12}")
-            print("-"*90)
+        viewTasks(tasks)
+        print()
 
-            # iterate through the whole list and print each task
-            for index, task in enumerate(task_list, start=1):
-                print(f"{index:<5} {task.task_details.strip():<30} {task.due_date.strip():<12} {task.priority.strip():<10} {task.category.strip():<10} {task.status.strip():<12}")
-            print()
-        # if task list is empty
-        else:
-            print("No task available, please add a new one and try again.")
-    
     # if user selects to update a task
     elif choice == 3:
         # view the list of task for the user to pick which one to update
-        if task_list:
-            print(f"{'':<5} {'Task':<30} {'Due Date':<12} {'Priority':<10} {'Category':<10} {'Status':<12}")
-            print("-"*90)
-
-            # iterate through the whole list and print each task
-            for index, task in enumerate(task_list, start=1):
-                print(f"{index:<5} {task.task_details.strip():<30} {task.due_date.strip():<12} {task.priority.strip():<10} {task.category.strip():<10} {task.status.strip():<12}")
-            print()
+        if tasks:
+            viewTasks(tasks)
 
             # ask user which task to update
             task_number = int(input("Enter task number to update: "))
@@ -135,31 +163,31 @@ while True:
             # if user selects to update task details
             if what_to_update == 'a':
                 new_value = input("Enter new task details: ")
-                task_list[task_number - 1].task_details = new_value
+                tasks[task_number - 1].task_details = new_value
                 print("Successfully updated task details!")
 
             # if user selects to update due date
             elif what_to_update == 'b':
                 new_value = input("Enter new due date: ")
-                task_list[task_number - 1].due_date = new_value
+                tasks[task_number - 1].due_date = new_value
                 print("Successfully updated due date!")
 
             # if user selects to update priority
             elif what_to_update == 'c':
                 new_value = input("Enter new priority: ")
-                task_list[task_number - 1].priority = new_value
+                tasks[task_number - 1].priority = new_value
                 print("Successfully updated priority!")
 
             # if user selects to update category
             elif what_to_update == 'd':
                 new_value = input("Enter new category: ")
-                task_list[task_number - 1].category = new_value
+                tasks[task_number - 1].category = new_value
                 print("Successfully updated category!")
 
             # if user selects to update status
             elif what_to_update == 'e':
                 new_value = input("Enter new status: ")
-                task_list[task_number - 1].status = new_value
+                tasks[task_number - 1].status = new_value
                 print("Successfully updated status!")
             else:
                 print("Invalid choice, please try again.")            
