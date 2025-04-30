@@ -78,11 +78,7 @@ def writeToFile(file, tasks):
         
         for task in tasks:
             writer.writerow([
-                task.task_details,
-                task.due_date,
-                task.priority,
-                task.category,
-                task.status
+                task.to_string() # using the built in to_string method to write into the csv file
             ])
 
 
@@ -96,9 +92,9 @@ def viewTasks(list_of_tasks):
         print(f"{index:<5} {task.task_details:<30} {task.due_date:<12} {task.priority:<10} {task.category:<10} {task.status:<12}")
 
 
-# -- Main Program --
+# -- Start Main Program --
 
-user = input("Enter your student/staff details (ID or Name): ".strip())
+user = input("Enter your student/staff details (ID or Name): ".strip()) # ask user for identity
 
 folder = "users"
 os.makedirs(folder, exist_ok=True) # make a users folder if it doesn't exist
@@ -114,7 +110,7 @@ else: # if user exists
     print(f"Current User: {user}") # print current user
     tasks = readFromFile(filename) # call readFromFile function to get a list of tasks from users last session
 
-# Loop
+# -- Main Program Loop --
 while True:
     print("\nMenu Options:")
     print("1. Add a new task")
