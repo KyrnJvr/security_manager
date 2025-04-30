@@ -78,7 +78,11 @@ def writeToFile(file, tasks):
         
         for task in tasks:
             writer.writerow([
-                task.to_string() # using the built in to_string method to write into the csv file
+                task.task_details,
+                task.due_date,
+                task.priority,
+                task.category,
+                task.status 
             ])
 
 
@@ -107,7 +111,7 @@ if not os.path.exists(filename): # if there is no existing file for the user
         writer.writerow(["Task Details", "Due_Date", "Priority", "Category", "Status"]) # writing a header for the user file
     tasks = [] # empty list for the user to store tasks into
 else: # if user exists
-    print(f"Current User: {user}") # print current user
+    print(f"Welcome {user}!") # print current user
     tasks = readFromFile(filename) # call readFromFile function to get a list of tasks from users last session
 
 # -- Main Program Loop --
@@ -129,11 +133,11 @@ while True:
     # if user selected to add a new task
     if choice == 1:
         # acquire task details from the user
-        task_details = input("Enter task details: ").title()
-        due_date = input("Enter due date: ")
-        priority = input("Enter priority level: ").title()
-        category = input("Enter category: ").title()
-        status = input("Enter status: ").title()
+        task_details = input("Enter task details (e.g. Install anti-virus): ").title()
+        due_date = input("Enter due date (DD/MM/YYYY): ")
+        priority = input("Enter priority level (A, B, C): ").title()
+        category = input("Enter category (e.g. Mobile, Desktop, Tablet): ").title()
+        status = input("Enter status (e.g. Not Yet, In Progress, Completed): ").title()
 
         # create a new task object and store user input
         new_task = SecurityTask(task_details, due_date, priority, category, status)
@@ -157,65 +161,95 @@ while True:
         if tasks:
             viewTasks(tasks)
 
-            # ask user which task to update
-            task_number = int(input("Enter task number to update: "))
-            print() # for readability
+            try:
+                task_number = int(input("\nEnter task number to update: "))
 
-            # print task options to choose from
-            print("a. task details")
-            print("b. due date")
-            print("c. priority")
-            print("d. category")
-            print("e. status")
+                if 1< task_number > len(tasks):
+                    print(f"Please enter a valid number between 1 and {len(tasks)}")
+                    continue
+                    
+                print("a. task details")
+                print("b. due date")
+                print("c. priority")
+                print("d. category")
+                print("e. status")
+                print("f. cancel update")
 
-            # ask user which task attribute to update
-            what_to_update = input("What do you want to update?: ").lower()
+                what_to_update = input("\nWhat would you like to update?: ").lower()
 
-            '''
-            
-            codition template
+                if what_to_update == 'a': #* TASK DETAILS: update validation
+                    new_value = input("Enter new task details: ")
 
-            if user selects to update {task attribute} THEN
-                ask for new value
-                update task accordingly
-                print success message
-            else:
-                print invalid choice
+                    if not new_value.strip():
+                        print("Task details cannot be empty. Update Cancelled.")
+                    else:
+                        tasks[task_number - 1].task_details = new_value.title()
+                        writeToFile(filename, tasks)
+                        print("Task details updated successfully.")
 
-            
-            '''
+                elif what_to_update == 'b': #* DUE DATE: update validation
+                    while True:
+                        new_value = input("Enter new due date (dd/mm/yy): ")
 
-            # if user selects to update task details
-            if what_to_update == 'a':
-                new_value = input("Enter new task details: ")
-                tasks[task_number - 1].task_details = new_value
-                print("Successfully updated task details!")
+                        if len(new_value.split('/')) == 3: # small validation to have consistent date formats
+                            break
+                        print("Invalid date format. Please use DD/MM/YYYY format.")
+                    tasks[task_number - 1].due_date = new_value
+                    writeToFile(filename, tasks)
+                    print("Due date updated successfully .")
 
-            # if user selects to update due date
-            elif what_to_update == 'b':
-                new_value = input("Enter new due date: ")
-                tasks[task_number - 1].due_date = new_value
-                print("Successfully updated due date!")
+                elif what_to_update == 'c': #* PRIORITY: update validation 
 
-            # if user selects to update priority
-            elif what_to_update == 'c':
-                new_value = input("Enter new priority: ")
-                tasks[task_number - 1].priority = new_value
-                print("Successfully updated priority!")
+                    priorities = ['A', 'B', 'C'] # list of valid priorities
 
-            # if user selects to update category
-            elif what_to_update == 'd':
-                new_value = input("Enter new category: ")
-                tasks[task_number - 1].category = new_value
-                print("Successfully updated category!")
+                    while True:
+                        new_value = input(f"Enter new priority ({','.join(priorities)}): ").upper()
 
-            # if user selects to update status
-            elif what_to_update == 'e':
-                new_value = input("Enter new status: ")
-                tasks[task_number - 1].status = new_value
-                print("Successfully updated status!")
-            else:
-                print("Invalid choice, please try again.")            
+                        if new_value in priorities: # validation to restrict priority to certain values only
+                            break
+                        print(f"Invalid priority. Please choose from: {','.join(priorities)}")
+
+                    tasks[task_number - 1].priority = new_value
+                    writeToFile(filename, tasks)
+                    print("Priority updated successfully.")
+                
+                elif what_to_update == 'd': #* CATEGORY: update validation
+
+                    categories = ['Mobile', 'Desktop', 'Tablet']
+
+                    while True:
+                        new_value = input(f"Enter new category ({','.join(categories)}): ").title()
+
+                        if new_value in categories: #* restrict categories to certain values
+                            break
+                        print(f"Invalid Category. Please choose from: {','.join(categories)}")
+                    
+                    tasks[task_number - 1].category = new_value
+                    writeToFile(filename, tasks)
+                    print("Category updated successfully.")
+
+                elif what_to_update == 'e': #* STATUS: update validation
+                    
+                    statuses = ['Not Yet', 'In Progress', 'Completed']
+
+                    while True:
+                        new_value = input(f"Enter new status ({','.join(statuses)}): ").title()
+
+                        if new_value in statuses: #* restrict status to certain values
+                            break
+                        print(f"Invalid Status. Please choose from: {','.join(statuses)}")
+                    
+                    tasks[task_number - 1].status = new_value
+                    writeToFile(filename, tasks)
+                    print("Status updated successfully.")
+                
+                elif what_to_update == 'f': #* CANCEL: update
+                    print("Cancelling update..")
+                    break
+
+            except ValueError:
+                print("Please enter a valid number.")
+                continue         
 
         # if task list is empty
         else:
