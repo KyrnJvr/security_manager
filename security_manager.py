@@ -41,14 +41,41 @@ Advanced.
 # Security Task Class (each is an instance of a task)
 class SecurityTask:
     def __init__(self, task_details, due_date, priority, category, status):
-        self.task_details = task_details
-        self.due_date = due_date
-        self.priority = priority
-        self.category = category
-        self.status = status
+        self.__task_details = task_details
+        self.__due_date = due_date
+        self.__priority = priority
+        self.__category = category
+        self.__status = status
     
-    def to_string(self):
-        return f"{self.task_details},{self.due_date},{self.priority},{self.category},{self.status}"
+    def getTaskDetails(self):
+        return self.__task_details
+
+    def setTaskDetails(self, taskDetails):
+        self.__task_details = taskDetails
+    
+    def getDueDate(self):
+        return self.__due_date
+    
+    def setDueDate(self, dueDate):
+        self.__due_date = dueDate
+    
+    def getPriority(self):
+        return self.__priority
+    
+    def setPriority(self, priority):
+        self.__priority = priority
+    
+    def getCategory(self):
+        return self.__category
+    
+    def setCategory(self, category):
+        self.__category = category
+
+    def getStatus(self):
+        return self.__status
+    
+    def setStatus(self, status):
+        self.__status = status
 
 
 def readFromFile(file):
@@ -78,11 +105,11 @@ def writeToFile(file, tasks):
         
         for task in tasks:
             writer.writerow([
-                task.task_details,
-                task.due_date,
-                task.priority,
-                task.category,
-                task.status 
+                task.getTaskDetails(),
+                task.getDueDate(),
+                task.getPriority(),
+                task.getCategory(),
+                task.getStatus() 
             ])
 
 
@@ -93,7 +120,7 @@ def viewTasks(list_of_tasks):
 
     # iterate through the whole list and print each task
     for index, task in enumerate(list_of_tasks, start=1):
-        print(f"{index:<5} {task.task_details:<30} {task.due_date:<12} {task.priority:<10} {task.category:<10} {task.status:<12}")
+        print(f"{index:<5} {task.getTaskDetails():<30} {task.getDueDate():<12} {task.getPriority():<10} {task.getCategory():<10} {task.getStatus():<12}")
 
 
 # -- Start Main Program --
@@ -164,8 +191,8 @@ while True:
             try:
                 task_number = int(input("\nEnter task number to update: "))
 
-                if 1< task_number > len(tasks):
-                    print(f"Please enter a valid number between 1 and {len(tasks)}")
+                if 1< task_number > len(tasks): # is task number entered is less than 1 or greater than length of tasks
+                    print(f"Please enter a valid number between 1 and {len(tasks)}") # print error message
                     continue
                     
                 print("a. task details")
@@ -183,7 +210,7 @@ while True:
                     if not new_value.strip():
                         print("Task details cannot be empty. Update Cancelled.")
                     else:
-                        tasks[task_number - 1].task_details = new_value.title()
+                        tasks[task_number - 1].setTaskDetails(new_value.title())
                         writeToFile(filename, tasks)
                         print("Task details updated successfully.")
 
@@ -194,7 +221,7 @@ while True:
                         if len(new_value.split('/')) == 3: # small validation to have consistent date formats
                             break
                         print("Invalid date format. Please use DD/MM/YYYY format.")
-                    tasks[task_number - 1].due_date = new_value
+                    tasks[task_number - 1].setDueDate(new_value)
                     writeToFile(filename, tasks)
                     print("Due date updated successfully .")
 
@@ -209,7 +236,7 @@ while True:
                             break
                         print(f"Invalid priority. Please choose from: {','.join(priorities)}")
 
-                    tasks[task_number - 1].priority = new_value
+                    tasks[task_number - 1].setPriority(new_value.title())
                     writeToFile(filename, tasks)
                     print("Priority updated successfully.")
                 
@@ -224,7 +251,7 @@ while True:
                             break
                         print(f"Invalid Category. Please choose from: {','.join(categories)}")
                     
-                    tasks[task_number - 1].category = new_value
+                    tasks[task_number - 1].setCategory(new_value.title())
                     writeToFile(filename, tasks)
                     print("Category updated successfully.")
 
@@ -239,7 +266,7 @@ while True:
                             break
                         print(f"Invalid Status. Please choose from: {','.join(statuses)}")
                     
-                    tasks[task_number - 1].status = new_value
+                    tasks[task_number - 1].setStatus(new_value.title())
                     writeToFile(filename, tasks)
                     print("Status updated successfully.")
                 
