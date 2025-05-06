@@ -191,9 +191,12 @@ while True:
             try:
                 task_number = int(input("\nEnter task number to update: "))
 
-                if 1< task_number > len(tasks): # is task number entered is less than 1 or greater than length of tasks
+                if task_number  < 1 or task_number > len(tasks): # is task number entered is less than 1 or greater than length of tasks
                     print(f"Please enter a valid number between 1 and {len(tasks)}") # print error message
                     continue
+                    
+                print(f"You are updating the task: '{tasks[task_number - 1].getTaskDetails()}'. \n")
+
                     
                 print("a. task details")
                 print("b. due date")
@@ -282,6 +285,48 @@ while True:
         else:
             print("No task available to update, please add a new one and try again.")
 
+    elif choice == 4:
+        if tasks:
+            viewTasks(tasks)
+
+            try:
+
+                task_number= int(input("\nEnter task to delete: "))
+
+                if task_number <1 or task_number > len(tasks):
+                    print(f"Please enter a valid number between 1 and {len(tasks)}")
+                
+                # task to delete (adjusted for zero based indexing)
+                task_to_delete = tasks[task_number - 1]
+
+
+                while True:
+                    confirm = input(f"Are you sure you want to delete '{task_to_delete.getTaskDetails()}'? (y/n): ").lower()
+
+                    if confirm == 'y':
+                        del tasks[task_number - 1] # delete task from the list
+
+                        writeToFile(filename, tasks) # re write the task in the file
+
+                        print("Task successfully deleted.") # print success message
+
+                        break 
+                    elif confirm == 'n':
+                        print("Deletion cancelled.") # print message of deletion cancellation
+                        break
+                    else:
+                        print("Invalid choice, please enter (y/n).") # print error message of invalid choice
+                        continue
+
+
+
+            except ValueError:
+                print("Please enter a valid number.")
+                continue
+        
+        else:
+            print("There is no task available to delete.")
+            
     elif choice == 5:
         print("Exiting the program..")
         break
