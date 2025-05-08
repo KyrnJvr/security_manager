@@ -5,38 +5,152 @@ import csv
 import os
 
 '''
-BYOD Security Manager App
 
-The university Information Technology services (ITS) have decided to create a UniSC BYOD security manager for student/staff devices and the university has asked you to create the app. This app will include information such as last patched, password last changed, software licensing (when expire etc) specifically for personal devices that users (staff and students) are bringing onto the university campus - university hardware such as staff laptops and lab computers are centrally managed).
+PSEUDOCODE: Detailed Design
 
-The user should be able to:
+DEFINE SecurityTask class
+    
+    INIT CONSTRUCTOR(task details, due date, priority, category, status)
+        set private 'attributes' = (task details, due date, priority, category, status)
 
-1. Create a security task list.
-2. Load their security task list from a file or database (see below).
-3. Add security tasks.
-4. Update security tasks (change priority, mark complete, change date)
-5. View the task list.
-6. Delete tasks.
-7. Save their task list.
+    // Getters and Setters for all attributes
 
-Implement features like due dates, priorities, and categories for security updates (and password changing). So, a task could be:
+    METHOD getTaskDetails()
+        return self.__task_details
+    
+    METHOD setTaskDetails(taskDetails)
+        set self.__task_details = taskDetails
 
+    // similar methods for other attributes (due date, priority, category, status)
 
-Task details        Due Date    Priority    Category    Completed
-
-Change phone PIN    7/6/2025    A           Mobile      Not Yet
+END CLASS
 
 
-Load and save the security task data to a file (e.g., JSON or CSV) so that students and ITS can resume  later. You will need to identify this file based on the student/staff’s details (student ID/Staff ID ??). This will function as a login – without the need for a password.
+METHOD readFromFile(file)
+    DECLARE empty list of tasks
+    OPEN file for reading
+        READ data from the file
+        FOR each line in the file
+            CREATE new SecurityTask Object with line values
+            APPEND task to the list of tasks
+        END FOR
+    CLOSE file
+    RETURN the list of tasks
 
-Advanced.
 
-1. Use classes and objects to model your data structures.
-2. Allow ITS to have a system that manages all staff and students (create multiple lists that have many tasks within them). 
-3. Add search functionality to find specific security tasks based on keywords or dates.
-4. Add a password to make your system a bit more secure.
-5. Use a database rather than individual files
+METHOD writeToFile(file, tasks)
+    OPEN file for writing
+        WRITE csv header row
+        FOR each task in tasks list
+            WRITE task attributes to csv row
+        END FOR
+    CLOSE file
 
+    
+METHOD viewTasks(list_of_tasks)
+    PRINT table header
+    PRINT divider line
+    FOR each task with index in the list of tasks
+        PRINT formatted row with task details
+    END FOR
+
+
+// Main Program
+
+PROMPT user for ID or Name
+SET 'users' folder
+CREATE folder if it doesn't exist
+SET filename based on user ID or Name
+
+IF file doesn't exist
+    CREATE new file with header
+    SET a task list for user
+ELSE
+    PRINT welcome message
+    SET task list EQUAL readFromFile(filename) method
+END IF
+
+// Main Program Loop
+
+WHILE true
+    DISPLAY menu options
+    PROMPT user for choice
+
+    IF choice is invalid
+        PRINT error message
+        CONTINUE LOOP
+    END IF
+
+    IF choice is 1 (Add new task)
+        PROMPT for (task details, due date, priority, category, status)
+        CREATE new SecurityTask Object with inputs
+        ADD task object to tasks list
+        CALL writeToFile with filename and tasks list
+        PRINT success message
+    
+    ELSE IF choice is 2 (View tasks)
+        IF task list is not empty
+            CALL viewTask method with tasks list
+        ELSE
+            PRINT no task/s message
+        END IF
+    
+    ELSE IF choice is 3 (Update task)
+        IF tasks list is not empty
+            CALL viewTask method with tasks list
+            PROMPT user for task number to update
+
+            IF task number is valid
+                INDICATE to user what task they are updating
+                DISPLAY update options
+                PROMPT user for task attribute to update
+
+                IF updating task details
+                    PROMPT new value
+                    VALIDATE input not empty
+                    UPDATE task
+                    CALL writeToFile method
+                    PRINT success message
+
+                ELSE IF // similar for other attributes (for priority, category and status 
+                        VALIDATE only from list of allowed values) 
+                ELSE IF canceling update
+                    BREAK from update
+                END IF
+            END IF
+        ELSE
+            PRINT no task message
+        END IF
+
+    ELSE IF choice is 4 (Delete task)
+        IF task list if not empty
+            CALL viewTasks method with tasks list
+            PROMPT user for task number to delete
+
+            IF task number is valid
+                PROMPT user for confirmation
+
+                IF confirmed
+                    DELETE task from list
+                    CALL writeToFile method
+                    PRINT success message
+                ELSE
+                    PRINT cancellation message
+                END IF
+            END IF
+        ELSE
+            PRINT no task message
+        END IF
+
+    ElSE IF choice is 5 (Exit)
+        PRINT exit message
+        BREAK from main loop
+
+    ELSE
+        PRINT invalid option message
+    END IF
+END WHILE     
+                
 '''
 # Security Task Class (each is an instance of a task)
 class SecurityTask:
